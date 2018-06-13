@@ -8,6 +8,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+import datetime
 
 # Loading home URL
 browser = webdriver.Firefox()
@@ -20,33 +21,30 @@ loginPass = browser.find_element_by_id("password").send_keys('Alvin1227')
 loginReady = browser.find_element_by_class_name("basic-login-submit")
 loginReady.submit()
 
-browser.get('https://quotes.wsj.com/GOGL')
-
 ## Close cookie policy if needed
 try:
     browser.find_element_by_class_name("close").click()
 except NoSuchElementException:
     print('Cookie agreement already acknowledged')
 
-Articles = {}
-Unigrams = {}
 article_count = 0
-df = []
-df.append('https://quotes.wsj.com/GOGL')
+interest_list = []
+## Read in list of companies
+interest_list.append('https://quotes.wsj.com/GOGL')
 
-for i in df:
+for interest in interest_list:
 
-    # Get headlines
-    h_bool = 1
+    browser.get(interest)
 
     try:
-        headline = browser.find_element_by_xpath("//ul[@id='newsSummary_c']/li[1]/ul/li[1]").text
+        time_stamp = browser.find_element_by_xpath("//ul[@id='newsSummary_c']/li[" + str(1) + "]/ul/li[1]").text
+        headline = browser.find_element_by_xpath("//ul[@id='newsSummary_c']/li[" + str(1) + "]/span/a[1]").text
+        link = browser.find_element_by_xpath("//ul[@id='newsSummary_c']/li[" + str(1) + "]/span/a[1]").get_attribute('href')
+        article_count += 1
     except NoSuchElementException:
-        h_bool = 0
 
-    # Enter article headline into dictionary
-    Articles[headline] = {}
-
+    print("***")
+    print(time_stamp)
     print(headline)
-
-    article_count += 1
+    print(link)
+    print("***")
