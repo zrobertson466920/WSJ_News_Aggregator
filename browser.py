@@ -15,7 +15,7 @@ def main():
 
     # Get file and reference info
     filename = input("What companies are we looking at? (cv) \n")
-    date = input("How far back should we look to? (d/m/y)")
+    date = input("How far back should we look to? (m/d/y) \n")
     dt = datetime.datetime.strptime(date, "%m/%d/%y")
 
     # Build interst interest_list
@@ -53,7 +53,6 @@ def main():
     loginPass = browser.find_element_by_id("password").send_keys('Alvin1227')
     loginReady = browser.find_element_by_class_name("basic-login-submit")
     loginReady.submit()
-    WebDriverWait(browser, 10)
 
     ## Close cookie policy if needed
     try:
@@ -69,29 +68,27 @@ def main():
 
         browser.get(interest_url)
 
-        try:
-            time_stamp = browser.find_element_by_xpath("//ul[@id='newsSummary_c']/li[" + str(1) + "]/ul/li[1]").text
-            headline = browser.find_element_by_xpath("//ul[@id='newsSummary_c']/li[" + str(1) + "]/span/a[1]").text
-            link = browser.find_element_by_xpath("//ul[@id='newsSummary_c']/li[" + str(1) + "]/span/a[1]").get_attribute('href')
-            article_count += 1
-        except NoSuchElementException:
-            print('No articles')
+        for counter in range(1,4):
+            try:
+                time_stamp = browser.find_element_by_xpath("//ul[@id='newsSummary_c']/li[" + str(counter) + "]/ul/li[1]").text
+                headline = browser.find_element_by_xpath("//ul[@id='newsSummary_c']/li[" + str(counter) + "]/span/a[1]").text
+                link = browser.find_element_by_xpath("//ul[@id='newsSummary_c']/li[" + str(counter) + "]/span/a[1]").get_attribute('href')
+                article_count += 1
+            except NoSuchElementException:
+                break
 
-        try:
-            ts = datetime.datetime.strptime(time_stamp, "%m/%d/%y")
-        except ValueError:
-            print("***")
-            print(interest[0] + ": " + time_stamp)
-            print(headline)
-            print(link)
-            print("***")
-            continue
+            try:
+                ts = datetime.datetime.strptime(time_stamp, "%m/%d/%y")
+            except ValueError:
+                print(interest[0] + ": " + time_stamp)
+                print(headline)
+                print(link + '\n')
 
-        if dt <= ts:
-            print("*v*")
-            print(interest[0] + ": " + time_stamp)
-            print(headline)
-            print(link)
-            print("*v*")
+            if dt <= ts:
+                print(interest[0] + ": " + time_stamp)
+                print(headline)
+                print(link + '\n')
+            else:
+                break
 
 main()
