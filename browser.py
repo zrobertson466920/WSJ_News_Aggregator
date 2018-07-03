@@ -48,20 +48,21 @@ def main():
     browser.get('http://markets.wsj.com/?mod=Homecle_MDW_MDC')
 
     # Login Credentials
-    login = browser.find_element_by_link_text("Log In").click()
-    loginID = browser.find_element_by_id("username").send_keys('zrobertson@uchicago.edu')
-    loginPass = browser.find_element_by_id("password").send_keys('Alvin1227')
-    loginReady = browser.find_element_by_class_name("basic-login-submit")
-    loginReady.submit()
+    #login = browser.find_element_by_link_text("Log In").click()
+    #loginID = browser.find_element_by_id("username").send_keys('username')
+    #loginPass = browser.find_element_by_id("password").send_keys('password')
+    #loginReady = browser.find_element_by_class_name("basic-login-submit")
+    #loginReady.submit()
 
-    ## Close cookie policy if needed
-    try:
-        browser.find_element_by_class_name("close").click()
-    except NoSuchElementException:
-        print('Cookie agreement already acknowledged')
+    # Close cookie policy if needed
+    #try:
+    #    browser.find_element_by_class_name("close").click()
+    #except NoSuchElementException:
+    #    print('Cookie agreement already acknowledged')
 
     article_count = 0
 
+    fl = open("link_list.txt",'w+')
     for interest in interest_list:
 
         interest_url = "https://quotes.wsj.com/" + interest[0]
@@ -69,6 +70,7 @@ def main():
         browser.get(interest_url)
 
         for counter in range(1,4):
+            browser.implicitly_wait(10)
             try:
                 time_stamp = browser.find_element_by_xpath("//ul[@id='newsSummary_c']/li[" + str(counter) + "]/ul/li[1]").text
                 headline = browser.find_element_by_xpath("//ul[@id='newsSummary_c']/li[" + str(counter) + "]/span/a[1]").text
@@ -79,16 +81,21 @@ def main():
 
             try:
                 ts = datetime.datetime.strptime(time_stamp, "%m/%d/%y")
+                if dt <= ts:
+                    print(interest[0] + ": " + time_stamp + '\n')
+                    print(headline + '\n')
+                    print(link + '\n \n')
+                    fl.write(interest[0] + ": " + time_stamp + '\n')
+                    fl.write(headline + '\n')
+                    fl.write(link + '\n \n')
+                else:
+                    break
             except ValueError:
-                print(interest[0] + ": " + time_stamp)
-                print(headline)
-                print(link + '\n')
-
-            if dt <= ts:
-                print(interest[0] + ": " + time_stamp)
-                print(headline)
-                print(link + '\n')
-            else:
-                break
+                print(interest[0] + ": " + time_stamp + '\n')
+                print(headline + '\n')
+                print(link + '\n \n')
+                fl.write(interest[0] + ": " + time_stamp + '\n')
+                fl.write(headline + '\n')
+                fl.write(link + '\n \n')
 
 main()
